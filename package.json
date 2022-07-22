@@ -73,7 +73,7 @@
     "isomorphic-fetch": "^2.2.1",
     "jsonschema": "^1.2.4",
     "randombytes": "^2.0.6",
-    "redux": "^3.7.2",
+    "redux": "^4.2.0",
     "redux-saga": "^0.16.0",
     "remote-redux-devtools": "^0.5.12",
     "url-search-params": "^0.10.0"
