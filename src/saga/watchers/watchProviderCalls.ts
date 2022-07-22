@@ -1,3 +1,4 @@
+import { delay } from '@redux-saga/delay-p';
 import {
   BALANCER,
   balancerQueueTimeout,
@@ -12,7 +13,7 @@ import {
 } from '@src/ducks/providerBalancer/providerCalls';
 import { getAvailableProviderId } from '@src/ducks/selectors';
 import { balancerChannel, providerChannels } from '@src/saga/channels';
-import { delay, SagaIterator } from 'redux-saga';
+import { SagaIterator } from 'redux-saga';
 import { apply, call, fork, put, race, select, take } from 'redux-saga/effects';
 
 function* getOptimalProviderId(
@@ -74,7 +75,11 @@ function* handleRequest(): SagaIterator {
       getQueueTimeout,
     );
 
-    const { queueTimeout } = yield race({
+    const { queueTimeout } = yield /* TODO: JSFIX could not patch the breaking change:
+    now race should be finished if any of effects resolved with END (by analogy with all)
+
+    Suggested fix: Only relevant if any of the raced effects resolve with an END value. In most scenarios, this change can be ignored.*/
+    race({
       processed: call(process),
       // we cancel in case of a balancer flush
       // so we dont put an action that's about to be flushed

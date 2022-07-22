@@ -21,7 +21,11 @@ function* handleAddingProviderConfig({
 
   const {
     processedProvider,
-  }: { processedProvider: ProcessedProvider } = yield race({
+  }: { processedProvider: ProcessedProvider } = yield /* TODO: JSFIX could not patch the breaking change:
+  now race should be finished if any of effects resolved with END (by analogy with all)
+
+  Suggested fix: Only relevant if any of the raced effects resolve with an END value. In most scenarios, this change can be ignored.*/
+  race({
     processedProvider: call(processProvider, id, config),
     cancelled: take(BALANCER.NETWORK_SWTICH_REQUESTED),
   });

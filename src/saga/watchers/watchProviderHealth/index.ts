@@ -25,7 +25,11 @@ function* watchOfflineProvider({
 }
 
 function* handleWatching(action: IProviderStatsOffline) {
-  yield race({
+  yield /* TODO: JSFIX could not patch the breaking change:
+  now race should be finished if any of effects resolved with END (by analogy with all)
+
+  Suggested fix: Only relevant if any of the raced effects resolve with an END value. In most scenarios, this change can be ignored.*/
+  race({
     online: call(watchOfflineProvider, action),
     networkSwitched: take(BALANCER.NETWORK_SWTICH_REQUESTED),
   });

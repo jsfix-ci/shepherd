@@ -1,3 +1,4 @@
+import { delay } from '@redux-saga/delay-p';
 import {
   IProviderCallRequested,
   isStaleCall,
@@ -11,7 +12,6 @@ import { providerChannels } from '@src/saga/channels';
 import { addProviderIdToCall, makeRetVal } from '@src/saga/sagaUtils';
 import { AllProviderMethods } from '@src/types';
 import { logger } from '@src/utils/logging';
-import { delay } from 'redux-saga';
 import { apply, call, cancelled, put, race, select } from 'redux-saga/effects';
 
 const isWeb3Method = (rpcMethod: AllProviderMethods) =>
@@ -32,7 +32,11 @@ function* sendRequestToProvider(
     );
 
     // make the call in the allotted timeout time
-    const { result } = yield race({
+    const { result } = yield /* TODO: JSFIX could not patch the breaking change:
+    now race should be finished if any of effects resolved with END (by analogy with all)
+
+    Suggested fix: Only relevant if any of the raced effects resolve with an END value. In most scenarios, this change can be ignored.*/
+    race({
       result: apply(provider, (provider as any)[rpcMethod], rpcArgs),
       // HACK: If it's an web3 method, then wait 5 minutes because it can be intercepted (see metamask) and then waits on user confirmation
       // TODO: refactor this to support web3 providers natively

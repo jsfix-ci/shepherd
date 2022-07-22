@@ -1,7 +1,7 @@
+import { delay } from '@redux-saga/delay-p';
 import { getProviderTimeoutThreshold } from '@src/ducks/providerConfigs';
 import { providerStorage } from '@src/providers/providerStorage';
 import { logger } from '@src/utils/logging';
-import { delay } from 'redux-saga';
 import { apply, call, race, select } from 'redux-saga/effects';
 
 /**
@@ -14,7 +14,11 @@ export function* checkProviderConnectivity(providerId: string) {
     typeof getProviderTimeoutThreshold
   > = yield select(getProviderTimeoutThreshold, providerId);
   try {
-    const { lb } = yield race({
+    const { lb } = yield /* TODO: JSFIX could not patch the breaking change:
+    now race should be finished if any of effects resolved with END (by analogy with all)
+
+    Suggested fix: Only relevant if any of the raced effects resolve with an END value. In most scenarios, this change can be ignored.*/
+    race({
       lb: apply(provider, provider.getCurrentBlock),
       to: call(delay, timeoutThreshold),
     });
